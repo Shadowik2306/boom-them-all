@@ -59,7 +59,3 @@ while running:
                 bomb.update()
     all_sprites.draw(screen)
     pygame.display.flip()
-
-
-
-
