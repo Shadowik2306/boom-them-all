@@ -19,35 +19,47 @@ def load_image(name, colorkey=None):
     return image
 
 
+pygame.init()
+width, height = 500, 500
+size = width, height
+screen = pygame.display.set_mode(size)
+bombs = pygame.sprite.Group()
+
+
 class Bomb(pygame.sprite.Sprite):
-    def __init__(self, *group):
-        super().__init__(*group)
-        self.image = load_image('bomb.png')
+    image = load_image('bomb.png')
+    image_of_boom = load_image('boom.png')
+
+    def __init__(self):
+        super().__init__(all_sprites)
+        self.image = Bomb.image
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = randint(0, 450), randint(0, 450)
+        while pygame.sprite.spritecollideany(self, bombs):
+            self.rect.x, self.rect.y = randint(0, 450), randint(0, 450)
+        self.add(bombs)
 
-    def update(self):
-        self.image = load_image('boom.png')
+    def update(self, *args):
+        if self.rect.collidepoint(event.pos):
+            self.image = Bomb.image_of_boom
 
 
-if __name__ == '__main__':
-    pygame.init()
-    size = width, height = 500, 500
-    screen = pygame.display.set_mode(size)
-    running = True
-    all_sprites = pygame.sprite.Group()
-    for i in range(20):
-        all_sprites.add(Bomb())
-    while running:
-        screen.fill('white')
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                for bomb in all_sprites:
-                    if (event.pos[0] in range(bomb.rect.x, bomb.rect.x + 51)) and \
-                        (event.pos[1] in range(bomb.rect.y, bomb.rect.y + 51)):
-                        bomb.update()
+all_sprites = pygame.sprite.Group()
+for i in range(20):
+    Bomb()
 
-        all_sprites.draw(screen)
-        pygame.display.flip()
+running = True
+while running:
+    screen.fill((0, 0, 0))
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            for bomb in all_sprites:
+                bomb.update()
+    all_sprites.draw(screen)
+    pygame.display.flip()
+
+
+
+
